@@ -5,9 +5,8 @@ import (
 	"strings"
 	"testing"
 
-	. "github.com/onsi/gomega"
-
 	"github.com/ibrt/golang-utils/fixturez"
+	. "github.com/onsi/gomega"
 
 	"github.com/ibrt/golang-dev/consolez"
 )
