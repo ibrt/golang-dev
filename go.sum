@@ -21,6 +21,8 @@ github.com/google/pprof v0.0.0-20240827171923-fa2c70bbbfe5 h1:5iH8iuqE5apketRbSF
 github.com/google/pprof v0.0.0-20240827171923-fa2c70bbbfe5/go.mod h1:vavhavw2zAxS5dIdcRluK6cSGGPlZynqzFM8NdvU144=
 github.com/hexops/gotextdiff v1.0.3 h1:gitA9+qJrrTCsiCl7+kh75nPqQt1cx4ZkudSTLoUqJM=
 github.com/hexops/gotextdiff v1.0.3/go.mod h1:pSWU5MAI3yDq+fZBTazCSJysOMbxWL1BSow5/V2vxeg=
+github.com/ibrt/golang-lib v0.6.0 h1:7JvIm3Ffv0QD5pWvLSuGqeDFEuVHk6ZONp0v+4zfI9o=
+github.com/ibrt/golang-lib v0.6.0/go.mod h1:CBRDiuyJywg+k/KQabwawZDhiDSoYMQozdaElqPXW7w=
 github.com/ibrt/golang-utils v0.3.0 h1:HgszqPM/OciM/1MXOCfFGXw8aacZg9zvvAjStVSjb0Q=
 github.com/ibrt/golang-utils v0.3.0/go.mod h1:pm/WsgeRSqriXaFRSQ37pfXoSkygQs251Q03ZcxzsVg=
 github.com/mattn/go-colorable v0.1.13 h1:fFA4WZxdEF4tXPZVKMLwD8oUnCTTo08duU7wxecdEvA=
