@@ -1,3 +1,4 @@
+// Package dcz provides various utilities for working with Docker Compose.
 package dcz
 
 import (
@@ -17,13 +18,17 @@ import (
 )
 
 var (
+	defaultRuntimeGOOS = runtime.GOOS
+)
+
+var (
 	// DefaultRuntimeGOOS allows to inject different values of "runtime.GOOS" for tests.
-	DefaultRuntimeGOOS = runtime.GOOS
+	DefaultRuntimeGOOS = defaultRuntimeGOOS
 )
 
 // RestoreDefaultRuntimeGOOS restores the default value of DefaultRuntimeGOOS.
 func RestoreDefaultRuntimeGOOS() {
-	DefaultRuntimeGOOS = runtime.GOOS
+	DefaultRuntimeGOOS = defaultRuntimeGOOS
 }
 
 // DockerCompose helps operate a Docker Compose config.

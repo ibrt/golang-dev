@@ -21,6 +21,13 @@ func TestCLISuite(t *testing.T) {
 	fixturez.RunSuite(t, &CLISuite{})
 }
 
+func (s *CLISuite) TestRestoreDefaultCLI(g *WithT) {
+	defaultCLI := consolez.DefaultCLI
+	consolez.DefaultCLI = consolez.NewCLI()
+	consolez.RestoreDefaultCLI()
+	g.Expect(consolez.DefaultCLI).To(Equal(defaultCLI))
+}
+
 func (*CLISuite) TestTool(g *WithT) {
 	type CLI struct {
 		Command struct {

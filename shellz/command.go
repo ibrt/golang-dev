@@ -17,13 +17,17 @@ import (
 )
 
 var (
+	defaultExecutor = &RealExecutor{}
+)
+
+var (
 	// DefaultExecutor is the default Executor for commands.
-	DefaultExecutor Executor = &RealExecutor{}
+	DefaultExecutor Executor = defaultExecutor
 )
 
 // RestoreDefaultExecutor restores the default executor.
 func RestoreDefaultExecutor() {
-	DefaultExecutor = &RealExecutor{}
+	DefaultExecutor = defaultExecutor
 }
 
 // Executor implements the OS-level operations related to a command.

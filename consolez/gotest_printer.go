@@ -38,16 +38,16 @@ func (p *goTestPrinter) PrintLine(line string) {
 	case p.maybeHandleSummaryLine(line), strings.HasPrefix(line, "coverage:"):
 		// do nothing
 	case p.isSecondary(trimmedLine):
-		_, _ = GetColorSecondary().Print(line)
+		_, _ = ColorSecondary.Print(line)
 		fmt.Print("\n")
 	case p.isSuccess(trimmedLine):
-		_, _ = GetColorSuccess().Print(line)
+		_, _ = ColorSuccess.Print(line)
 		fmt.Print("\n")
 	case p.isError(trimmedLine):
-		_, _ = GetColorError().Print(line)
+		_, _ = ColorError.Print(line)
 		fmt.Print("\n")
 	case p.isHighlight(trimmedLine):
-		_, _ = GetColorHighlight().Print(line)
+		_, _ = ColorHighlight.Print(line)
 		fmt.Print("\n")
 	default:
 		_, _ = fmt.Println(line)
@@ -69,13 +69,13 @@ func (p *goTestPrinter) maybeHandleSummaryLine(line string) bool {
 	switch {
 	case strings.HasPrefix(line, "?   \t"), strings.HasPrefix(line, "\t"):
 		pfx = "SKIP"
-		clr = GetColorSecondary()
+		clr = ColorSecondary
 	case strings.HasPrefix(line, "ok  \t"):
 		pfx = "PASS"
-		clr = GetColorSuccess()
+		clr = ColorSuccess
 	case strings.HasPrefix(line, "FAIL\t"):
 		pfx = "FAIL"
-		clr = GetColorError()
+		clr = ColorError
 	default:
 		return false
 	}

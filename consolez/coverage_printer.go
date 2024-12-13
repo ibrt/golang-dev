@@ -64,15 +64,15 @@ func (p *coveragePrinter) Print(coverage *Coverage) {
 		switch {
 		case pct >= p.higLmt:
 			pfx = "HIGC"
-			clr = GetColorSuccess()
+			clr = ColorSuccess
 			higPkgs++
 		case pct >= p.medLmt:
 			pfx = "MEDC"
-			clr = GetColorWarning()
+			clr = ColorWarning
 			medPkgs++
 		default:
 			pfx = "LOWC"
-			clr = GetColorError()
+			clr = ColorError
 			lowPkgs++
 		}
 
