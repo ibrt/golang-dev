@@ -13,15 +13,15 @@ import (
 	"github.com/ibrt/golang-dev/dcz"
 )
 
-type DockerSuite struct {
+type Suite struct {
 	// intentionally empty
 }
 
-func TestDockerSuite(t *testing.T) {
-	fixturez.RunSuite(t, &DockerSuite{})
+func TestSuite(t *testing.T) {
+	fixturez.RunSuite(t, &Suite{})
 }
 
-func (*DockerSuite) TestDockerCompose(g *WithT) {
+func (*Suite) TestDockerCompose(g *WithT) {
 	dc := dcz.NewDockerCompose(&ct.Config{Name: "test"})
 
 	g.Expect(dc.GetProjectName()).To(BeEmpty())
@@ -61,7 +61,7 @@ func (*DockerSuite) TestDockerCompose(g *WithT) {
 		"--ansi", "never", "--progress", "plain", "-f", "-"))
 }
 
-func (*DockerSuite) TestNewDockerComposeConfigDeploy(g *WithT) {
+func (*Suite) TestNewDockerComposeConfigDeploy(g *WithT) {
 	g.Expect(dcz.NewDockerComposeConfigDeploy(-1, 1)).To(Equal(
 		&ct.DeployConfig{
 			RestartPolicy: &ct.RestartPolicy{
@@ -88,7 +88,7 @@ func (*DockerSuite) TestNewDockerComposeConfigDeploy(g *WithT) {
 		}))
 }
 
-func (*DockerSuite) TestNewDockerComposeConfigExtraHosts(g *WithT) {
+func (*Suite) TestNewDockerComposeConfigExtraHosts(g *WithT) {
 	defer dcz.RestoreDefaultRuntimeGOOS()
 
 	dcz.DefaultRuntimeGOOS = "linux"
@@ -115,7 +115,7 @@ func (*DockerSuite) TestNewDockerComposeConfigExtraHosts(g *WithT) {
 		}))
 }
 
-func (*DockerSuite) TestNewDockerComposeConfigHealthCheck(g *WithT) {
+func (*Suite) TestNewDockerComposeConfigHealthCheck(g *WithT) {
 	g.Expect(dcz.NewDockerComposeConfigHealthCheckShell("cat %v", 1)).To(Equal(
 		&ct.HealthCheckConfig{
 			StartPeriod: memz.Ptr(ct.Duration(30 * time.Second)),

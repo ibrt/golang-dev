@@ -20,15 +20,15 @@ import (
 	"github.com/ibrt/golang-dev/shellz/tshellz"
 )
 
-type GoSuite struct {
+type Suite struct {
 	// intentionally empty
 }
 
-func TestGoSuite(t *testing.T) {
-	fixturez.RunSuite(t, &GoSuite{})
+func TestSuite(t *testing.T) {
+	fixturez.RunSuite(t, &Suite{})
 }
 
-func (*GoSuite) TestMustLookupGoTool(g *WithT) {
+func (*Suite) TestMustLookupGoTool(g *WithT) {
 	g.Expect(gtz.MustLookupGoTool("go-cov")).To(Equal(gtz.GoToolGoCov))
 	g.Expect(gtz.MustLookupGoTool("go-cov-html")).To(Equal(gtz.GoToolGoCovHTML))
 	g.Expect(gtz.MustLookupGoTool("golint")).To(Equal(gtz.GoToolGolint))
@@ -37,7 +37,7 @@ func (*GoSuite) TestMustLookupGoTool(g *WithT) {
 	g.Expect(func() { gtz.MustLookupGoTool("unknown") }).To(PanicWith(MatchError("unknown go tool: unknown")))
 }
 
-func (*GoSuite) TestGoTool(g *WithT) {
+func (*Suite) TestGoTool(g *WithT) {
 	gtz.GoToolGolint.MustRun(".")
 
 	g.Expect(gtz.NewGoTool("a", "b", "c").GetPackage()).To(Equal("a"))
@@ -50,7 +50,7 @@ func (*GoSuite) TestGoTool(g *WithT) {
 	g.Expect(gt.GetVersion()).To(Equal("latest"))
 }
 
-func (*GoSuite) TestRunGoChecks(g *WithT, ctrl *gomock.Controller) {
+func (*Suite) TestRunGoChecks(g *WithT, ctrl *gomock.Controller) {
 	gtz.GoToolGolint.GetVersion()      // warm up
 	gtz.GoToolStaticCheck.GetVersion() // warm up
 
@@ -148,7 +148,7 @@ func (*GoSuite) TestRunGoChecks(g *WithT, ctrl *gomock.Controller) {
 	g.Expect(errBuf).To(BeEmpty())
 }
 
-func (*GoSuite) TestRunGoTests_SelectedPackages(g *WithT, ctrl *gomock.Controller) {
+func (*Suite) TestRunGoTests_SelectedPackages(g *WithT, ctrl *gomock.Controller) {
 	gtz.GoToolGoCov.GetVersion()     // warm up
 	gtz.GoToolGoCovHTML.GetVersion() // warm up
 
@@ -270,7 +270,7 @@ func (*GoSuite) TestRunGoTests_SelectedPackages(g *WithT, ctrl *gomock.Controlle
 	g.Expect(errBuf).To(BeEmpty())
 }
 
-func (*GoSuite) TestRunGoTests_AllPackages(g *WithT, ctrl *gomock.Controller) {
+func (*Suite) TestRunGoTests_AllPackages(g *WithT, ctrl *gomock.Controller) {
 	gtz.GoToolGoCov.GetVersion()     // warm up
 	gtz.GoToolGoCovHTML.GetVersion() // warm up
 
