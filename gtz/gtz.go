@@ -1,3 +1,4 @@
+// Package gtz provides various utilities for running Go commands and Go-based CLI tools.
 package gtz
 
 import (
@@ -26,7 +27,7 @@ var (
 	GoToolStaticCheck = NewGoTool("honnef.co/go/tools", "cmd/staticcheck", "2024.1.1")
 )
 
-// MustLookupGoTool returns a *GoTool
+// MustLookupGoTool returns a [*GoTool]
 func MustLookupGoTool(key string) *GoTool {
 	switch key {
 	case "go-cov":
@@ -53,7 +54,7 @@ type GoTool struct {
 	currentVersion string
 }
 
-// NewGoTool initializes a new Go tool.
+// NewGoTool initializes a new [*GoTool].
 func NewGoTool(pkg, path, defaultVersion string) *GoTool {
 	if path != "" {
 		path = stringz.EnsurePrefix(path, "/")
@@ -75,7 +76,7 @@ func (t *GoTool) GetVersion() string {
 	return t.getVersion()
 }
 
-// GetPackage returns the Go package.
+// GetPackage returns the Go tool package.
 func (t *GoTool) GetPackage() string {
 	t.m.Lock()
 	defer t.m.Unlock()
@@ -89,7 +90,7 @@ func (t *GoTool) GetArgument() string {
 	return fmt.Sprintf("%v%v@%v", t.pkg, t.path, t.getVersion())
 }
 
-// GetCommand returns a *shellz.Command for this Go tool.
+// GetCommand returns a [*shellz.Command] for this Go tool.
 func (t *GoTool) GetCommand() *shellz.Command {
 	return shellz.NewCommand("go", "run").AddParams(t.GetArgument())
 }

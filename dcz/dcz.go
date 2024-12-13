@@ -1,3 +1,4 @@
+// Package dcz provides various utilities for working with Docker Compose.
 package dcz
 
 import (
@@ -17,13 +18,17 @@ import (
 )
 
 var (
-	// DefaultRuntimeGOOS allows to inject different values of "runtime.GOOS" for tests.
-	DefaultRuntimeGOOS = runtime.GOOS
+	defaultRuntimeGOOS = runtime.GOOS
 )
 
-// RestoreDefaultRuntimeGOOS restores the default value of DefaultRuntimeGOOS.
+var (
+	// DefaultRuntimeGOOS allows to inject different values of [runtime.GOOS] for tests.
+	DefaultRuntimeGOOS = defaultRuntimeGOOS
+)
+
+// RestoreDefaultRuntimeGOOS restores the default value of [DefaultRuntimeGOOS].
 func RestoreDefaultRuntimeGOOS() {
-	DefaultRuntimeGOOS = runtime.GOOS
+	DefaultRuntimeGOOS = defaultRuntimeGOOS
 }
 
 // DockerCompose helps operate a Docker Compose config.
@@ -33,7 +38,7 @@ type DockerCompose struct {
 	cfg         *ct.Config
 }
 
-// NewDockerCompose initializes a new Docker Compose.
+// NewDockerCompose initializes a new [*DockerCompose].
 func NewDockerCompose(cfg *ct.Config) *DockerCompose {
 	errorz.Assertf(cfg != nil, "missing config")
 
@@ -44,7 +49,7 @@ func NewDockerCompose(cfg *ct.Config) *DockerCompose {
 	}
 }
 
-// WithProjectName returns a clone of the Docker Compose with the given project name set.
+// WithProjectName returns a clone of the [*DockerCompose] with the given project name set.
 func (d *DockerCompose) WithProjectName(projectName string) *DockerCompose {
 	return &DockerCompose{
 		projectName: projectName,
@@ -53,7 +58,7 @@ func (d *DockerCompose) WithProjectName(projectName string) *DockerCompose {
 	}
 }
 
-// WithProfiles returns a clone of the Docker Compose with the given profiles set.
+// WithProfiles returns a clone of the [*DockerCompose] with the given profiles set.
 func (d *DockerCompose) WithProfiles(profiles ...string) *DockerCompose {
 	return &DockerCompose{
 		projectName: d.projectName,
@@ -84,25 +89,25 @@ func (d *DockerCompose) GetMarshaledConfig() []byte {
 	return buf
 }
 
-// GetUpCommand returns a pre-configured "docker compose up" command.
+// GetUpCommand returns a pre-configured "docker compose up" [*shellz.Command].
 func (d *DockerCompose) GetUpCommand() *shellz.Command {
 	return d.GetCommand().
 		AddParams("up", "--detach", "--build", "--pull", "always", "--force-recreate", "--remove-orphans", "--wait")
 }
 
-// GetDownCommand returns a pre-configured "docker compose down" command.
+// GetDownCommand returns a pre-configured "docker compose down" [*shellz.Command].
 func (d *DockerCompose) GetDownCommand() *shellz.Command {
 	return d.GetCommand().
 		AddParams("down", "--volumes", "--rmi", "local", "--remove-orphans", "--timeout", "5")
 }
 
-// GetPSCommand returns a pre-configured "docker compose ps" command.
+// GetPSCommand returns a pre-configured "docker compose ps" [*shellz.Command].
 func (d *DockerCompose) GetPSCommand() *shellz.Command {
 	return d.GetCommand().
 		AddParams("ps", "--all", "--orphans")
 }
 
-// GetCommand returns a pre-configured "docker compose" command.
+// GetCommand returns a pre-configured "docker compose" [*shellz.Command].
 func (d *DockerCompose) GetCommand() *shellz.Command {
 	cmd := shellz.NewCommand("docker", "compose")
 

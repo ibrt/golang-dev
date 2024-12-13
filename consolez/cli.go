@@ -7,13 +7,14 @@ import (
 	"sync"
 
 	"github.com/alecthomas/kong"
+	"github.com/fatih/color"
 	"github.com/ibrt/golang-utils/errorz"
 	"github.com/ibrt/golang-utils/filez"
 	"github.com/rodaine/table"
 )
 
 // Known icons.
-const (
+var (
 	IconRocket                     = "\U0001F680"
 	IconHighVoltage                = "\U000026A1"
 	IconBackhandIndexPointingRight = "\U0001F449"
@@ -21,24 +22,36 @@ const (
 	IconCollision                  = "\U0001F4A5"
 )
 
+// Known colors.
+var (
+	ColorDefault            = color.New(color.Reset)
+	ColorHighlight          = color.New(color.Bold)
+	ColorSecondaryHighlight = color.New(color.Bold, color.Faint)
+	ColorSecondary          = color.New(color.Faint)
+	ColorInfo               = color.New(color.FgCyan)
+	ColorSuccess            = color.New(color.FgGreen)
+	ColorWarning            = color.New(color.FgYellow)
+	ColorError              = color.New(color.FgHiRed)
+)
+
 var (
 	_ CLIOption = CLIOptionFunc(nil)
 )
 
-// CLIOption describes a CLI option.
+// CLIOption describes a [*CLI] option.
 type CLIOption interface {
 	Apply(*CLI)
 }
 
-// CLIOptionFunc describes a CLI option.
+// CLIOptionFunc describes a [*CLI] option.
 type CLIOptionFunc func(*CLI)
 
-// Apply implements the CLIOption interface.
+// Apply implements the [CLIOption] interface.
 func (f CLIOptionFunc) Apply(c *CLI) {
 	f(c)
 }
 
-// CLIExit returns a CLI option that allows to provide an alternative implementation for "os.Exit".
+// CLIExit returns a [CLIOptionFunc] that allows to provide an alternative implementation for [os.Exit].
 func CLIExit(exit func(code int)) CLIOptionFunc {
 	return func(c *CLI) {
 		c.exit = exit
@@ -46,9 +59,18 @@ func CLIExit(exit func(code int)) CLIOptionFunc {
 }
 
 var (
-	// DefaultCLI is a default, shared instance of CLI.
-	DefaultCLI = NewCLI()
+	defaultCLI = NewCLI()
 )
+
+// DefaultCLI is a default, shared instance of [*CLI].
+var (
+	DefaultCLI = defaultCLI
+)
+
+// RestoreDefaultCLI restores the default value of [DefaultCLI].
+func RestoreDefaultCLI() {
+	DefaultCLI = defaultCLI
+}
 
 // CLI provides some utilities for printing messages in CLI tools.
 type CLI struct {
@@ -57,7 +79,7 @@ type CLI struct {
 	exit func(code int)
 }
 
-// NewCLI initializes a new CLI.
+// NewCLI initializes a new [*CLI].
 func NewCLI(options ...CLIOption) *CLI {
 	c := &CLI{
 		m:    &sync.Mutex{},
@@ -108,7 +130,7 @@ func (c *CLI) Banner(title, tagLine string) {
 
 	fmt.Print("┌", strings.Repeat("─", len(title)+len(tagLine)+6), "┐\n")
 	fmt.Print("│ ", IconRocket, " ")
-	_, _ = GetColorHighlight().Print(title)
+	_, _ = ColorHighlight.Print(title)
 	fmt.Print(" ")
 	fmt.Print(tagLine)
 	fmt.Print(" │\n")
@@ -129,7 +151,7 @@ func (c *CLI) Header(format string, a ...any) func() {
 	case 0:
 		fmt.Print(IconHighVoltage)
 		fmt.Print(" ")
-		_, _ = GetColorHighlight().Printf(format, a...)
+		_, _ = ColorHighlight.Printf(format, a...)
 		fmt.Println()
 	case 1:
 		fmt.Print(IconBackhandIndexPointingRight)
@@ -137,8 +159,8 @@ func (c *CLI) Header(format string, a ...any) func() {
 		fmt.Printf(format, a...)
 		fmt.Println()
 	default:
-		_, _ = GetColorSecondaryHighlight().Print("—— ")
-		_, _ = GetColorSecondaryHighlight().Printf(format, a...)
+		_, _ = ColorSecondaryHighlight.Print("—— ")
+		_, _ = ColorSecondaryHighlight.Printf(format, a...)
 		fmt.Println()
 	}
 
@@ -156,7 +178,7 @@ func (c *CLI) Header(format string, a ...any) func() {
 	}
 }
 
-// WithHeader calls Header and runs f() within its scope.
+// WithHeader calls [*CLI.Header] and runs f() within its scope.
 func (c *CLI) WithHeader(format string, a []any, f func()) {
 	defer c.Header(format, a...)()
 	f()
@@ -167,11 +189,11 @@ func (c *CLI) Notice(scope string, highlight string, secondary ...string) {
 	c.m.Lock()
 	defer c.m.Unlock()
 
-	_, _ = GetColorSecondary().Printf("[%v]", alignRight(scope, 24))
-	_, _ = GetColorDefault().Print(" ", highlight)
+	_, _ = ColorSecondary.Printf("[%v]", alignRight(scope, 24))
+	_, _ = ColorDefault.Print(" ", highlight)
 
 	for _, v := range secondary {
-		_, _ = GetColorSecondary().Print(" ", v)
+		_, _ = ColorSecondary.Print(" ", v)
 	}
 
 	fmt.Println()
@@ -184,7 +206,7 @@ func (c *CLI) Command(cmd string, params ...string) {
 
 	fmt.Print(IconRunner)
 	fmt.Printf(" %v ", filez.MustRelForDisplay(cmd))
-	_, _ = GetColorSecondary().Print(strings.Join(params, " "))
+	_, _ = ColorSecondary.Print(strings.Join(params, " "))
 	fmt.Println()
 }
 
@@ -192,8 +214,8 @@ func (c *CLI) Command(cmd string, params ...string) {
 func (c *CLI) NewTable(columnHeaders ...any) table.Table {
 	return table.
 		New(columnHeaders...).
-		WithHeaderFormatter(GetColorHighlight().SprintfFunc()).
-		WithFirstColumnFormatter(GetColorWarning().SprintfFunc())
+		WithHeaderFormatter(ColorHighlight.SprintfFunc()).
+		WithFirstColumnFormatter(ColorWarning.SprintfFunc())
 }
 
 // Error prints an error.
@@ -204,15 +226,15 @@ func (c *CLI) Error(err error, debug bool) {
 	fmt.Println()
 	fmt.Print(IconCollision)
 	fmt.Print(" ")
-	_, _ = GetColorHighlight().Println("Error")
-	_, _ = GetColorError().Println(err.Error())
+	_, _ = ColorHighlight.Println("Error")
+	_, _ = ColorError.Println(err.Error())
 
 	if debug {
 		fmt.Println(errorz.SDump(err))
 	}
 }
 
-// Recover calls Error on a recovered panic and exits.
+// Recover calls [*CLI.Error] on a recovered panic and exits.
 func (c *CLI) Recover(debug bool) {
 	if err := errorz.MaybeWrapRecover(recover()); err != nil {
 		c.Error(err, debug)
