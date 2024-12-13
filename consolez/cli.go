@@ -67,7 +67,7 @@ var (
 	DefaultCLI = defaultCLI
 )
 
-// RestoreDefaultCLI restores the default, shared instance of  [*CLI].
+// RestoreDefaultCLI restores the default value of [DefaultCLI].
 func RestoreDefaultCLI() {
 	DefaultCLI = defaultCLI
 }
