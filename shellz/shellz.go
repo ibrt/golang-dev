@@ -1,3 +1,4 @@
+// Package shellz provides various utilities for running commands.
 package shellz
 
 import (
@@ -20,12 +21,12 @@ var (
 	defaultExecutor = &RealExecutor{}
 )
 
+// DefaultExecutor is the default [Executor] for commands.
 var (
-	// DefaultExecutor is the default Executor for commands.
 	DefaultExecutor Executor = defaultExecutor
 )
 
-// RestoreDefaultExecutor restores the default executor.
+// RestoreDefaultExecutor restores the default value of [DefaultExecutor].
 func RestoreDefaultExecutor() {
 	DefaultExecutor = defaultExecutor
 }
@@ -42,47 +43,47 @@ type Executor interface {
 	SyscallExec(c *Command, argv0 string, argv []string, envv []string) error
 }
 
-// RealExecutor implements the Executor interface and actually runs commands on the host.
+// RealExecutor implements the [Executor] interface and actually runs commands on the host.
 type RealExecutor struct {
 	// intentionally empty
 }
 
-// ExecCmdCombinedOutput implements the Executor interface.
+// ExecCmdCombinedOutput implements the [Executor] interface.
 func (e *RealExecutor) ExecCmdCombinedOutput(_ *Command, cmd *exec.Cmd) ([]byte, error) {
 	return cmd.CombinedOutput()
 }
 
-// ExecCmdOutput implements the Executor interface.
+// ExecCmdOutput implements the [Executor] interface.
 func (e *RealExecutor) ExecCmdOutput(_ *Command, cmd *exec.Cmd) ([]byte, error) {
 	return cmd.Output()
 }
 
-// ExecCmdRun implements the Executor interface.
+// ExecCmdRun implements the [Executor] interface.
 func (e *RealExecutor) ExecCmdRun(_ *Command, cmd *exec.Cmd) error {
 	return cmd.Run()
 }
 
-// ExecCmdStart implements the Executor interface.
+// ExecCmdStart implements the [Executor] interface.
 func (e *RealExecutor) ExecCmdStart(_ *Command, cmd *exec.Cmd) error {
 	return cmd.Start()
 }
 
-// ExecCmdWait implements the Executor interface.
+// ExecCmdWait implements the [Executor] interface.
 func (e *RealExecutor) ExecCmdWait(_ *Command, cmd *exec.Cmd) error {
 	return cmd.Wait()
 }
 
-// ExecLookPath implements the Executor interface.
+// ExecLookPath implements the [Executor] interface.
 func (e *RealExecutor) ExecLookPath(_ *Command, file string) (string, error) {
 	return exec.LookPath(file)
 }
 
-// OSChdir implements the Executor interface.
+// OSChdir implements the [Executor] interface.
 func (e *RealExecutor) OSChdir(_ *Command, dir string) error {
 	return os.Chdir(dir)
 }
 
-// SyscallExec implements the Executor interface.
+// SyscallExec implements the [Executor] interface.
 func (e *RealExecutor) SyscallExec(_ *Command, argv0 string, argv []string, envv []string) error {
 	return syscall.Exec(argv0, argv, envv)
 }
@@ -103,7 +104,7 @@ type ExecutionError struct {
 	err            error
 }
 
-// NewExecutionError initializes a new execution error.
+// NewExecutionError initializes a new [*ExecutionError].
 func NewExecutionError(err error, c *Command) *ExecutionError {
 	e := &ExecutionError{
 		cmd:            c.cmd,
@@ -161,12 +162,12 @@ func (e *ExecutionError) Error() string {
 	return "execution error: " + e.err.Error()
 }
 
-// Unwrap implements the errorz.UnwrapSingle interface.
+// Unwrap implements the [errorz.UnwrapSingle] interface.
 func (e *ExecutionError) Unwrap() error {
 	return e.err
 }
 
-// Command describes a command to be spawned in a shell.
+// Command describes a command.
 type Command struct {
 	cmd    string
 	params []string
@@ -178,7 +179,7 @@ type Command struct {
 	executor Executor
 }
 
-// NewCommand creates a new Command.
+// NewCommand creates a new [*Command].
 func NewCommand(cmd string, params ...string) *Command {
 	return &Command{
 		cmd:      cmd,
@@ -188,14 +189,14 @@ func NewCommand(cmd string, params ...string) *Command {
 	}
 }
 
-// AddParams adds the given params to the command.
+// AddParams adds the given params.
 func (c *Command) AddParams(params ...string) *Command {
 	cc := c.clone()
 	cc.params = append(cc.params, params...)
 	return cc
 }
 
-// AddParamsIfTrue adds the given params to the command if the condition is true.
+// AddParamsIfTrue adds the given params if the condition is true.
 func (c *Command) AddParamsIfTrue(cond bool, params ...string) *Command {
 	if cond {
 		return c.AddParams(params...)
@@ -209,38 +210,38 @@ func (c *Command) GetParams() []string {
 	return memz.ShallowCopySlice(c.params)
 }
 
-// SetDir sets the working directory on the command.
+// SetDir sets the working directory.
 func (c *Command) SetDir(dir string) *Command {
 	cc := c.clone()
 	cc.dir = dir
 	return cc
 }
 
-// GetDir returns the current dir.
+// GetDir returns the current working directory.
 func (c *Command) GetDir() string {
 	return c.dir
 }
 
-// SetEnv sets an environment variable on the command.
+// SetEnv sets an environment variable.
 func (c *Command) SetEnv(k, v string) *Command {
 	cc := c.clone()
 	cc.env[k] = v
 	return cc
 }
 
-// MergeEnv sets all the environment variables on the command.
+// MergeEnv sets all the environment variables.
 func (c *Command) MergeEnv(env map[string]string) *Command {
 	cc := c.clone()
 	cc.env = memz.MergeMaps(cc.env, env)
 	return cc
 }
 
-// GetEnv returns the current env.
+// GetEnv returns the current environment variables.
 func (c *Command) GetEnv() map[string]string {
 	return memz.ShallowCopyMap(c.env)
 }
 
-// SetIn sets the input to the command.
+// SetIn sets the input.
 func (c *Command) SetIn(in io.Reader) *Command {
 	cc := c.clone()
 	cc.in = in
@@ -267,7 +268,7 @@ func (c *Command) GetEcho() *bool {
 	return memz.Ptr(*c.echo)
 }
 
-// SetExecutor sets the Executor for the command.
+// SetExecutor sets the [Executor] for the command.
 func (c *Command) SetExecutor(executor Executor) *Command {
 	cc := c.clone()
 	cc.executor = executor
@@ -288,7 +289,7 @@ func (c *Command) Run() error {
 	return nil
 }
 
-// MustRun is like run but panics on error.
+// MustRun is like [*Command.Run] but panics on error.
 func (c *Command) MustRun() {
 	errorz.MaybeMustWrap(c.Run())
 }
@@ -313,14 +314,14 @@ func (c *Command) Output(echoStderr bool) ([]byte, error) {
 	return out, nil
 }
 
-// MustOutput is like Output but panics on error.
+// MustOutput is like [*Command.Output] but panics on error.
 func (c *Command) MustOutput(echoStderr bool) []byte {
 	out, err := c.Output(echoStderr)
 	errorz.MaybeMustWrap(err)
 	return out
 }
 
-// OutputString is like Output but returns a string.
+// OutputString is like [*Command.Output] but returns a string.
 func (c *Command) OutputString(echoStderr bool) (string, error) {
 	buf, err := c.Output(echoStderr)
 	if err != nil {
@@ -330,7 +331,7 @@ func (c *Command) OutputString(echoStderr bool) (string, error) {
 	return string(buf), nil
 }
 
-// MustOutputString is like OutputString but panics on error.
+// MustOutputString is like [*Command.OutputString] but panics on error.
 func (c *Command) MustOutputString(echoStderr bool) string {
 	buf, err := c.OutputString(echoStderr)
 	errorz.MaybeMustWrap(err)
@@ -349,14 +350,14 @@ func (c *Command) CombinedOutput() ([]byte, error) {
 	return out, nil
 }
 
-// MustCombinedOutput is like CombinedOutput but panics on error.
+// MustCombinedOutput is like [*Command.CombinedOutput] but panics on error.
 func (c *Command) MustCombinedOutput() []byte {
 	out, err := c.CombinedOutput()
 	errorz.MaybeMustWrap(err)
 	return out
 }
 
-// CombinedOutputString is like CombinedOutput but returns a string.
+// CombinedOutputString is like [*Command.CombinedOutput] but returns a string.
 func (c *Command) CombinedOutputString() (string, error) {
 	buf, err := c.CombinedOutput()
 	if err != nil {
@@ -366,7 +367,7 @@ func (c *Command) CombinedOutputString() (string, error) {
 	return string(buf), nil
 }
 
-// MustCombinedOutputString is like CombinedOutputString but panics on error.
+// MustCombinedOutputString is like [*Command.CombinedOutputString] but panics on error.
 func (c *Command) MustCombinedOutputString() string {
 	buf, err := c.CombinedOutputString()
 	errorz.MaybeMustWrap(err)
@@ -436,12 +437,12 @@ func (c *Command) handleLines(wg *sync.WaitGroup, r io.Reader, lineFunc func(str
 	}
 }
 
-// MustLines is like lines but panics on error.
+// MustLines is like [*Command.Lines] but panics on error.
 func (c *Command) MustLines(lineFunc func(string)) {
 	errorz.MaybeMustWrap(c.Lines(lineFunc))
 }
 
-// Exec execs the command (i.e. replaces the current process).
+// Exec the command (i.e. replace the current process).
 func (c *Command) Exec() error {
 	c.maybeEcho(true)
 
@@ -463,7 +464,7 @@ func (c *Command) Exec() error {
 	return nil // Note: unreachable with default implementation.
 }
 
-// MustExec is like Exec but panics on error.
+// MustExec is like [*Command.Exec] but panics on error.
 func (c *Command) MustExec() {
 	errorz.MaybeMustWrap(c.Exec())
 }

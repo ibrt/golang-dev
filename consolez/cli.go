@@ -62,8 +62,8 @@ var (
 	defaultCLI = NewCLI()
 )
 
+// DefaultCLI is a default, shared instance of [*CLI].
 var (
-	// DefaultCLI is a default, shared instance of [*CLI].
 	DefaultCLI = defaultCLI
 )
 
