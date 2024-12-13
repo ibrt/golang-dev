@@ -15,42 +15,42 @@ var (
 	colorError              = color.New(color.FgHiRed)
 )
 
-// GetColorDefault returns a color.
+// GetColorDefault returns a [*color.Color].
 func GetColorDefault() *color.Color {
 	return colorDefault
 }
 
-// GetColorHighlight returns a color.
+// GetColorHighlight returns a [*color.Color].
 func GetColorHighlight() *color.Color {
 	return colorHighlight
 }
 
-// GetColorSecondaryHighlight returns a color.
+// GetColorSecondaryHighlight returns a [*color.Color].
 func GetColorSecondaryHighlight() *color.Color {
 	return colorSecondaryHighlight
 }
 
-// GetColorSecondary returns a color.
+// GetColorSecondary returns a [*color.Color].
 func GetColorSecondary() *color.Color {
 	return colorSecondary
 }
 
-// GetColorInfo returns a color.
+// GetColorInfo returns a [*color.Color].
 func GetColorInfo() *color.Color {
 	return colorInfo
 }
 
-// GetColorSuccess returns a color.
+// GetColorSuccess returns a [*color.Color].
 func GetColorSuccess() *color.Color {
 	return colorSuccess
 }
 
-// GetColorWarning returns a color.
+// GetColorWarning returns a [*color.Color].
 func GetColorWarning() *color.Color {
 	return colorWarning
 }
 
-// GetColorError returns a color.
+// GetColorError returns a [*color.Color].
 func GetColorError() *color.Color {
 	return colorError
 }

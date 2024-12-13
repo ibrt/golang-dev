@@ -23,7 +23,7 @@ type coveragePrinter struct {
 	medLmt    float64
 }
 
-// NewCoveragePrinter initializes a new CoveragePrinter.
+// NewCoveragePrinter initializes a new [CoveragePrinter].
 func NewCoveragePrinter() CoveragePrinter {
 	return &coveragePrinter{
 		maxPkgLen: 60,
@@ -32,7 +32,7 @@ func NewCoveragePrinter() CoveragePrinter {
 	}
 }
 
-// Print implements the CoveragePrinter interface.
+// Print implements the [CoveragePrinter] interface.
 func (p *coveragePrinter) Print(coverage *Coverage) {
 	var gtot, grch, lowPkgs, medPkgs, higPkgs int
 	var gpct float64

@@ -25,20 +25,20 @@ var (
 	_ CLIOption = CLIOptionFunc(nil)
 )
 
-// CLIOption describes a CLI option.
+// CLIOption describes a [*CLI] option.
 type CLIOption interface {
 	Apply(*CLI)
 }
 
-// CLIOptionFunc describes a CLI option.
+// CLIOptionFunc describes a [*CLI] option.
 type CLIOptionFunc func(*CLI)
 
-// Apply implements the CLIOption interface.
+// Apply implements the [CLIOption] interface.
 func (f CLIOptionFunc) Apply(c *CLI) {
 	f(c)
 }
 
-// CLIExit returns a CLI option that allows to provide an alternative implementation for "os.Exit".
+// CLIExit returns a [CLIOptionFunc] that allows to provide an alternative implementation for [os.Exit].
 func CLIExit(exit func(code int)) CLIOptionFunc {
 	return func(c *CLI) {
 		c.exit = exit
@@ -46,7 +46,7 @@ func CLIExit(exit func(code int)) CLIOptionFunc {
 }
 
 var (
-	// DefaultCLI is a default, shared instance of CLI.
+	// DefaultCLI is a default, shared instance of [*CLI].
 	DefaultCLI = NewCLI()
 )
 
@@ -57,7 +57,7 @@ type CLI struct {
 	exit func(code int)
 }
 
-// NewCLI initializes a new CLI.
+// NewCLI initializes a new [*CLI].
 func NewCLI(options ...CLIOption) *CLI {
 	c := &CLI{
 		m:    &sync.Mutex{},
@@ -156,7 +156,7 @@ func (c *CLI) Header(format string, a ...any) func() {
 	}
 }
 
-// WithHeader calls Header and runs f() within its scope.
+// WithHeader calls [*CLI.Header] and runs f() within its scope.
 func (c *CLI) WithHeader(format string, a []any, f func()) {
 	defer c.Header(format, a...)()
 	f()
@@ -212,7 +212,7 @@ func (c *CLI) Error(err error, debug bool) {
 	}
 }
 
-// Recover calls Error on a recovered panic and exits.
+// Recover calls [*CLI.Error] on a recovered panic and exits.
 func (c *CLI) Recover(debug bool) {
 	if err := errorz.MaybeWrapRecover(recover()); err != nil {
 		c.Error(err, debug)

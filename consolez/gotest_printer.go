@@ -21,7 +21,7 @@ type goTestPrinter struct {
 	maxPkgLen int
 }
 
-// NewGoTestPrinter initializes a new GoTestPrinter.
+// NewGoTestPrinter initializes a new [GoTestPrinter].
 func NewGoTestPrinter() GoTestPrinter {
 	return &goTestPrinter{
 		startTime: time.Now(),
@@ -30,7 +30,7 @@ func NewGoTestPrinter() GoTestPrinter {
 	}
 }
 
-// PrintLine implements the GoTestPrinter interface.
+// PrintLine implements the [GoTestPrinter] interface.
 func (p *goTestPrinter) PrintLine(line string) {
 	trimmedLine := strings.TrimSpace(line)
 
