@@ -208,6 +208,7 @@ func (*CLISuite) TestError_DebugTrue(g *WithT) {
 
 func (*CLISuite) TestRecover(g *WithT) {
 	c := consolez.NewCLI().
+		SetStyles(outz.DefaultStyles).
 		SetExit(func(code int) {
 			g.Expect(code).To(Equal(1))
 		})

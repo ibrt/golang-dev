@@ -56,8 +56,20 @@ func NewCLI() *CLI {
 	return c
 }
 
+// SetStyles sets the styles.
+func (c *CLI) SetStyles(styles outz.Styles) *CLI {
+	c.m.Lock()
+	defer c.m.Unlock()
+
+	c.styles = styles
+	return c
+}
+
 // SetExit sets the exit implementation.
 func (c *CLI) SetExit(exit func(code int)) *CLI {
+	c.m.Lock()
+	defer c.m.Unlock()
+
 	c.exit = exit
 	return c
 }

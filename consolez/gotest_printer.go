@@ -16,6 +16,7 @@ type GoTestPrinter interface {
 }
 
 type goTestPrinter struct {
+	styles    outz.Styles
 	startTime time.Time
 	passPkgs  int
 	skipPkgs  int
@@ -25,6 +26,7 @@ type goTestPrinter struct {
 // NewGoTestPrinter initializes a new [GoTestPrinter].
 func NewGoTestPrinter() GoTestPrinter {
 	return &goTestPrinter{
+		styles:    outz.DefaultStyles,
 		startTime: time.Now(),
 		passPkgs:  0,
 		maxPkgLen: 60,
@@ -39,16 +41,16 @@ func (p *goTestPrinter) PrintLine(line string) {
 	case p.maybeHandleSummaryLine(line), strings.HasPrefix(line, "coverage:"):
 		// do nothing
 	case p.isSecondary(trimmedLine):
-		_, _ = outz.DefaultStyles.Secondary().Print(line)
+		_, _ = p.styles.Secondary().Print(line)
 		fmt.Print("\n")
 	case p.isSuccess(trimmedLine):
-		_, _ = outz.DefaultStyles.Success().Print(line)
+		_, _ = p.styles.Success().Print(line)
 		fmt.Print("\n")
 	case p.isError(trimmedLine):
-		_, _ = outz.DefaultStyles.Error().Print(line)
+		_, _ = p.styles.Error().Print(line)
 		fmt.Print("\n")
 	case p.isHighlight(trimmedLine):
-		_, _ = outz.DefaultStyles.Highlight().Print(line)
+		_, _ = p.styles.Highlight().Print(line)
 		fmt.Print("\n")
 	default:
 		_, _ = fmt.Println(line)
@@ -70,13 +72,13 @@ func (p *goTestPrinter) maybeHandleSummaryLine(line string) bool {
 	switch {
 	case strings.HasPrefix(line, "?   \t"), strings.HasPrefix(line, "\t"):
 		pfx = "SKIP"
-		clr = outz.DefaultStyles.Secondary()
+		clr = p.styles.Secondary()
 	case strings.HasPrefix(line, "ok  \t"):
 		pfx = "PASS"
-		clr = outz.DefaultStyles.Success()
+		clr = p.styles.Success()
 	case strings.HasPrefix(line, "FAIL\t"):
 		pfx = "FAIL"
-		clr = outz.DefaultStyles.Error()
+		clr = p.styles.Error()
 	default:
 		return false
 	}

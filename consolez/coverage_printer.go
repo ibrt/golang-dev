@@ -19,6 +19,7 @@ type CoveragePrinter interface {
 }
 
 type coveragePrinter struct {
+	styles    outz.Styles
 	maxPkgLen int
 	higLmt    float64
 	medLmt    float64
@@ -27,6 +28,7 @@ type coveragePrinter struct {
 // NewCoveragePrinter initializes a new [CoveragePrinter].
 func NewCoveragePrinter() CoveragePrinter {
 	return &coveragePrinter{
+		styles:    outz.DefaultStyles,
 		maxPkgLen: 60,
 		higLmt:    90,
 		medLmt:    60,
@@ -65,15 +67,15 @@ func (p *coveragePrinter) Print(coverage *Coverage) {
 		switch {
 		case pct >= p.higLmt:
 			pfx = "HIGC"
-			clr = outz.DefaultStyles.Success()
+			clr = p.styles.Success()
 			higPkgs++
 		case pct >= p.medLmt:
 			pfx = "MEDC"
-			clr = outz.DefaultStyles.Warning()
+			clr = p.styles.Warning()
 			medPkgs++
 		default:
 			pfx = "LOWC"
-			clr = outz.DefaultStyles.Error()
+			clr = p.styles.Error()
 			lowPkgs++
 		}
 
