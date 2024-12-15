@@ -7,7 +7,7 @@ require (
 	github.com/axw/gocov v1.2.1
 	github.com/compose-spec/compose-go v1.20.2
 	github.com/fatih/color v1.18.0
-	github.com/ibrt/golang-utils v0.5.0
+	github.com/ibrt/golang-utils v0.10.0
 	github.com/onsi/gomega v1.36.1
 	github.com/rodaine/table v1.3.0
 	go.uber.org/mock v0.5.0
@@ -27,8 +27,8 @@ require (
 	github.com/opencontainers/go-digest v1.0.0 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/sirupsen/logrus v1.9.3 // indirect
-	golang.org/x/exp v0.0.0-20241210194714-1829a127f884 // indirect
-	golang.org/x/net v0.31.0 // indirect
+	golang.org/x/exp v0.0.0-20241215155358-4a5509556b9e // indirect
+	golang.org/x/net v0.32.0 // indirect
 	golang.org/x/sync v0.10.0 // indirect
 	golang.org/x/sys v0.28.0 // indirect
 	golang.org/x/text v0.21.0 // indirect

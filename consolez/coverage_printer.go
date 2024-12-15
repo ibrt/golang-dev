@@ -5,6 +5,7 @@ import (
 
 	"github.com/axw/gocov"
 	"github.com/fatih/color"
+	"github.com/ibrt/golang-utils/outz"
 )
 
 // Coverage describes collected coverage.
@@ -18,6 +19,7 @@ type CoveragePrinter interface {
 }
 
 type coveragePrinter struct {
+	styles    outz.Styles
 	maxPkgLen int
 	higLmt    float64
 	medLmt    float64
@@ -26,6 +28,7 @@ type coveragePrinter struct {
 // NewCoveragePrinter initializes a new [CoveragePrinter].
 func NewCoveragePrinter() CoveragePrinter {
 	return &coveragePrinter{
+		styles:    outz.DefaultStyles,
 		maxPkgLen: 60,
 		higLmt:    90,
 		medLmt:    60,
@@ -64,15 +67,15 @@ func (p *coveragePrinter) Print(coverage *Coverage) {
 		switch {
 		case pct >= p.higLmt:
 			pfx = "HIGC"
-			clr = ColorSuccess
+			clr = p.styles.Success()
 			higPkgs++
 		case pct >= p.medLmt:
 			pfx = "MEDC"
-			clr = ColorWarning
+			clr = p.styles.Warning()
 			medPkgs++
 		default:
 			pfx = "LOWC"
-			clr = ColorError
+			clr = p.styles.Error()
 			lowPkgs++
 		}
 
