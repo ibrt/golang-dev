@@ -12,6 +12,7 @@ import (
 	"github.com/ibrt/golang-utils/errorz"
 	"github.com/ibrt/golang-utils/filez"
 	"github.com/ibrt/golang-utils/fixturez"
+	"github.com/ibrt/golang-utils/outz"
 	. "github.com/onsi/gomega"
 	"go.uber.org/mock/gomock"
 
@@ -122,15 +123,15 @@ func (*Suite) TestRunGoChecks(g *WithT, ctrl *gomock.Controller) {
 		Times(1).
 		Return(nil)
 
-	fixturez.MustBeginOutputCapture(fixturez.OutputSetupStandard, fixturez.GetOutputSetupFatihColor(true), fixturez.OutputSetupRodaineTable)
-	defer fixturez.ResetOutputCapture()
+	outz.MustBeginOutputCapture(outz.OutputSetupStandard, outz.GetOutputSetupFatihColor(true), outz.OutputSetupRodaineTable)
+	defer outz.ResetOutputCapture()
 
 	gtz.MustRunGoChecks(&gtz.GoChecksParams{
 		AllPackages: []string{"./..."},
 		BuildTags:   []string{"t1", "t2"},
 	})
 
-	outBuf, errBuf := fixturez.MustEndOutputCapture()
+	outBuf, errBuf := outz.MustEndOutputCapture()
 	g.Expect(outBuf).To(Equal(strings.Join([]string{
 		"[...............go-checks] preparing...",
 		"🏃 go mod tidy",
@@ -239,8 +240,8 @@ func (*Suite) TestRunGoTests_SelectedPackages(g *WithT, ctrl *gomock.Controller)
 		Times(1).
 		Return(nil)
 
-	fixturez.MustBeginOutputCapture(fixturez.OutputSetupStandard, fixturez.GetOutputSetupFatihColor(true), fixturez.OutputSetupRodaineTable)
-	defer fixturez.ResetOutputCapture()
+	outz.MustBeginOutputCapture(outz.OutputSetupStandard, outz.GetOutputSetupFatihColor(true), outz.OutputSetupRodaineTable)
+	defer outz.ResetOutputCapture()
 
 	gtz.MustRunGoTests(&gtz.GoTestsParams{
 		AllPackages:      []string{"./..."},
@@ -253,7 +254,7 @@ func (*Suite) TestRunGoTests_SelectedPackages(g *WithT, ctrl *gomock.Controller)
 		OpenCoverage:     true,
 	})
 
-	outBuf, errBuf := fixturez.MustEndOutputCapture()
+	outBuf, errBuf := outz.MustEndOutputCapture()
 	g.Expect(outBuf).To(Equal(strings.Join([]string{
 		"[................go-tests] preparing coverage directory...",
 		"[................go-tests] generating Go code...",
@@ -361,8 +362,8 @@ func (*Suite) TestRunGoTests_AllPackages(g *WithT, ctrl *gomock.Controller) {
 		Times(1).
 		Return(nil)
 
-	fixturez.MustBeginOutputCapture(fixturez.OutputSetupStandard, fixturez.GetOutputSetupFatihColor(true), fixturez.OutputSetupRodaineTable)
-	defer fixturez.ResetOutputCapture()
+	outz.MustBeginOutputCapture(outz.OutputSetupStandard, outz.GetOutputSetupFatihColor(true), outz.OutputSetupRodaineTable)
+	defer outz.ResetOutputCapture()
 
 	gtz.MustRunGoTests(&gtz.GoTestsParams{
 		AllPackages:      []string{"./..."},
@@ -375,7 +376,7 @@ func (*Suite) TestRunGoTests_AllPackages(g *WithT, ctrl *gomock.Controller) {
 		OpenCoverage:     true,
 	})
 
-	outBuf, errBuf := fixturez.MustEndOutputCapture()
+	outBuf, errBuf := outz.MustEndOutputCapture()
 	g.Expect(outBuf).To(Equal(strings.Join([]string{
 		"[................go-tests] preparing coverage directory...",
 		"[................go-tests] generating Go code...",

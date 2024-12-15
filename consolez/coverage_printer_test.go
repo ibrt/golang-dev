@@ -6,6 +6,7 @@ import (
 
 	"github.com/axw/gocov"
 	"github.com/ibrt/golang-utils/fixturez"
+	"github.com/ibrt/golang-utils/outz"
 	. "github.com/onsi/gomega"
 
 	"github.com/ibrt/golang-dev/consolez"
@@ -20,8 +21,8 @@ func TestCoveragePrinterSuite(t *testing.T) {
 }
 
 func (*CoveragePrinterSuite) TestCoveragePrinter(g *WithT) {
-	fixturez.MustBeginOutputCapture(fixturez.OutputSetupStandard, fixturez.GetOutputSetupFatihColor(false), fixturez.OutputSetupRodaineTable)
-	defer fixturez.ResetOutputCapture()
+	outz.MustBeginOutputCapture(outz.OutputSetupStandard, outz.GetOutputSetupFatihColor(false), outz.OutputSetupRodaineTable)
+	defer outz.ResetOutputCapture()
 
 	consolez.NewCoveragePrinter().Print(&consolez.Coverage{
 		Packages: []*gocov.Package{
@@ -83,7 +84,7 @@ func (*CoveragePrinterSuite) TestCoveragePrinter(g *WithT) {
 		},
 	})
 
-	outBuf, errBuf := fixturez.MustEndOutputCapture()
+	outBuf, errBuf := outz.MustEndOutputCapture()
 
 	g.Expect(outBuf).To(Equal(strings.Join([]string{
 		"\x1b[91mLOWC    lowp                                                          25.0% [1/4]\x1b[0m",
@@ -99,8 +100,8 @@ func (*CoveragePrinterSuite) TestCoveragePrinter(g *WithT) {
 }
 
 func (*CoveragePrinterSuite) TestCoveragePrinterNoStatements(g *WithT) {
-	fixturez.MustBeginOutputCapture(fixturez.OutputSetupStandard, fixturez.GetOutputSetupFatihColor(false), fixturez.OutputSetupRodaineTable)
-	defer fixturez.ResetOutputCapture()
+	outz.MustBeginOutputCapture(outz.OutputSetupStandard, outz.GetOutputSetupFatihColor(false), outz.OutputSetupRodaineTable)
+	defer outz.ResetOutputCapture()
 
 	consolez.NewCoveragePrinter().Print(&consolez.Coverage{
 		Packages: []*gocov.Package{
@@ -115,7 +116,7 @@ func (*CoveragePrinterSuite) TestCoveragePrinterNoStatements(g *WithT) {
 		},
 	})
 
-	outBuf, errBuf := fixturez.MustEndOutputCapture()
+	outBuf, errBuf := outz.MustEndOutputCapture()
 
 	g.Expect(outBuf).To(Equal(strings.Join([]string{
 		"\x1b[32mHIGC    nostm                                                        100.0% [0/0]\x1b[0m",

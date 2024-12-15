@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/fatih/color"
+	"github.com/ibrt/golang-utils/outz"
 )
 
 // GoTestPrinter implements a printer for "go test" output.
@@ -38,16 +39,16 @@ func (p *goTestPrinter) PrintLine(line string) {
 	case p.maybeHandleSummaryLine(line), strings.HasPrefix(line, "coverage:"):
 		// do nothing
 	case p.isSecondary(trimmedLine):
-		_, _ = ColorSecondary.Print(line)
+		_, _ = outz.DefaultStyles.Secondary().Print(line)
 		fmt.Print("\n")
 	case p.isSuccess(trimmedLine):
-		_, _ = ColorSuccess.Print(line)
+		_, _ = outz.DefaultStyles.Success().Print(line)
 		fmt.Print("\n")
 	case p.isError(trimmedLine):
-		_, _ = ColorError.Print(line)
+		_, _ = outz.DefaultStyles.Error().Print(line)
 		fmt.Print("\n")
 	case p.isHighlight(trimmedLine):
-		_, _ = ColorHighlight.Print(line)
+		_, _ = outz.DefaultStyles.Highlight().Print(line)
 		fmt.Print("\n")
 	default:
 		_, _ = fmt.Println(line)
@@ -69,13 +70,13 @@ func (p *goTestPrinter) maybeHandleSummaryLine(line string) bool {
 	switch {
 	case strings.HasPrefix(line, "?   \t"), strings.HasPrefix(line, "\t"):
 		pfx = "SKIP"
-		clr = ColorSecondary
+		clr = outz.DefaultStyles.Secondary()
 	case strings.HasPrefix(line, "ok  \t"):
 		pfx = "PASS"
-		clr = ColorSuccess
+		clr = outz.DefaultStyles.Success()
 	case strings.HasPrefix(line, "FAIL\t"):
 		pfx = "FAIL"
-		clr = ColorError
+		clr = outz.DefaultStyles.Error()
 	default:
 		return false
 	}

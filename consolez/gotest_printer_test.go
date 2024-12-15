@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/ibrt/golang-utils/fixturez"
+	"github.com/ibrt/golang-utils/outz"
 	. "github.com/onsi/gomega"
 
 	"github.com/ibrt/golang-dev/consolez"
@@ -20,8 +21,8 @@ func TestGoTestPrinterSuite(t *testing.T) {
 }
 
 func (*GoTestPrinterSuite) TestGoTestPrinter(g *WithT) {
-	fixturez.MustBeginOutputCapture(fixturez.OutputSetupStandard, fixturez.GetOutputSetupFatihColor(false), fixturez.OutputSetupRodaineTable)
-	defer fixturez.ResetOutputCapture()
+	outz.MustBeginOutputCapture(outz.OutputSetupStandard, outz.GetOutputSetupFatihColor(false), outz.OutputSetupRodaineTable)
+	defer outz.ResetOutputCapture()
 
 	p := consolez.NewGoTestPrinter()
 	p.PrintLine("other")
@@ -48,7 +49,7 @@ func (*GoTestPrinterSuite) TestGoTestPrinter(g *WithT) {
 	p.PrintLine(fmt.Sprintf("FAIL\t%v\t1s", strings.Repeat("p", 1024)))
 	p.PrintDone()
 
-	outBuf, errBuf := fixturez.MustEndOutputCapture()
+	outBuf, errBuf := outz.MustEndOutputCapture()
 
 	g.Expect(outBuf).To(Equal(strings.Join([]string{
 		"other",

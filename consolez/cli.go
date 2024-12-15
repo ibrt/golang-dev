@@ -7,56 +7,20 @@ import (
 	"sync"
 
 	"github.com/alecthomas/kong"
-	"github.com/fatih/color"
 	"github.com/ibrt/golang-utils/errorz"
 	"github.com/ibrt/golang-utils/filez"
+	"github.com/ibrt/golang-utils/outz"
 	"github.com/rodaine/table"
 )
 
 // Known icons.
-var (
+const (
 	IconRocket                     = "\U0001F680"
 	IconHighVoltage                = "\U000026A1"
 	IconBackhandIndexPointingRight = "\U0001F449"
 	IconRunner                     = "\U0001F3C3"
 	IconCollision                  = "\U0001F4A5"
 )
-
-// Known colors.
-var (
-	ColorDefault            = color.New(color.Reset)
-	ColorHighlight          = color.New(color.Bold)
-	ColorSecondaryHighlight = color.New(color.Bold, color.Faint)
-	ColorSecondary          = color.New(color.Faint)
-	ColorInfo               = color.New(color.FgCyan)
-	ColorSuccess            = color.New(color.FgGreen)
-	ColorWarning            = color.New(color.FgYellow)
-	ColorError              = color.New(color.FgHiRed)
-)
-
-var (
-	_ CLIOption = CLIOptionFunc(nil)
-)
-
-// CLIOption describes a [*CLI] option.
-type CLIOption interface {
-	Apply(*CLI)
-}
-
-// CLIOptionFunc describes a [*CLI] option.
-type CLIOptionFunc func(*CLI)
-
-// Apply implements the [CLIOption] interface.
-func (f CLIOptionFunc) Apply(c *CLI) {
-	f(c)
-}
-
-// CLIExit returns a [CLIOptionFunc] that allows to provide an alternative implementation for [os.Exit].
-func CLIExit(exit func(code int)) CLIOptionFunc {
-	return func(c *CLI) {
-		c.exit = exit
-	}
-}
 
 var (
 	defaultCLI = NewCLI()
@@ -74,23 +38,27 @@ func RestoreDefaultCLI() {
 
 // CLI provides some utilities for printing messages in CLI tools.
 type CLI struct {
-	m    *sync.Mutex
-	hL   int
-	exit func(code int)
+	m      *sync.Mutex
+	hL     int
+	styles outz.Styles
+	exit   func(code int)
 }
 
 // NewCLI initializes a new [*CLI].
-func NewCLI(options ...CLIOption) *CLI {
+func NewCLI() *CLI {
 	c := &CLI{
-		m:    &sync.Mutex{},
-		hL:   0,
-		exit: os.Exit,
+		m:      &sync.Mutex{},
+		hL:     0,
+		styles: outz.DefaultStyles,
+		exit:   os.Exit,
 	}
 
-	for _, option := range options {
-		option.Apply(c)
-	}
+	return c
+}
 
+// SetExit sets the exit implementation.
+func (c *CLI) SetExit(exit func(code int)) *CLI {
+	c.exit = exit
 	return c
 }
 
@@ -130,7 +98,7 @@ func (c *CLI) Banner(title, tagLine string) {
 
 	fmt.Print("┌", strings.Repeat("─", len(title)+len(tagLine)+6), "┐\n")
 	fmt.Print("│ ", IconRocket, " ")
-	_, _ = ColorHighlight.Print(title)
+	_, _ = c.styles.Highlight().Print(title)
 	fmt.Print(" ")
 	fmt.Print(tagLine)
 	fmt.Print(" │\n")
@@ -151,7 +119,7 @@ func (c *CLI) Header(format string, a ...any) func() {
 	case 0:
 		fmt.Print(IconHighVoltage)
 		fmt.Print(" ")
-		_, _ = ColorHighlight.Printf(format, a...)
+		_, _ = c.styles.Highlight().Printf(format, a...)
 		fmt.Println()
 	case 1:
 		fmt.Print(IconBackhandIndexPointingRight)
@@ -159,8 +127,8 @@ func (c *CLI) Header(format string, a ...any) func() {
 		fmt.Printf(format, a...)
 		fmt.Println()
 	default:
-		_, _ = ColorSecondaryHighlight.Print("—— ")
-		_, _ = ColorSecondaryHighlight.Printf(format, a...)
+		_, _ = c.styles.SecondaryHighlight().Print("—— ")
+		_, _ = c.styles.SecondaryHighlight().Printf(format, a...)
 		fmt.Println()
 	}
 
@@ -189,11 +157,11 @@ func (c *CLI) Notice(scope string, highlight string, secondary ...string) {
 	c.m.Lock()
 	defer c.m.Unlock()
 
-	_, _ = ColorSecondary.Printf("[%v]", alignRight(scope, 24))
-	_, _ = ColorDefault.Print(" ", highlight)
+	_, _ = c.styles.Secondary().Printf("[%v]", alignRight(scope, 24))
+	_, _ = c.styles.Default().Print(" ", highlight)
 
 	for _, v := range secondary {
-		_, _ = ColorSecondary.Print(" ", v)
+		_, _ = c.styles.Secondary().Print(" ", v)
 	}
 
 	fmt.Println()
@@ -206,7 +174,7 @@ func (c *CLI) Command(cmd string, params ...string) {
 
 	fmt.Print(IconRunner)
 	fmt.Printf(" %v ", filez.MustRelForDisplay(cmd))
-	_, _ = ColorSecondary.Print(strings.Join(params, " "))
+	_, _ = c.styles.Secondary().Print(strings.Join(params, " "))
 	fmt.Println()
 }
 
@@ -214,8 +182,8 @@ func (c *CLI) Command(cmd string, params ...string) {
 func (c *CLI) NewTable(columnHeaders ...any) table.Table {
 	return table.
 		New(columnHeaders...).
-		WithHeaderFormatter(ColorHighlight.SprintfFunc()).
-		WithFirstColumnFormatter(ColorWarning.SprintfFunc())
+		WithHeaderFormatter(c.styles.Highlight().SprintfFunc()).
+		WithFirstColumnFormatter(c.styles.Warning().SprintfFunc())
 }
 
 // Error prints an error.
@@ -226,8 +194,8 @@ func (c *CLI) Error(err error, debug bool) {
 	fmt.Println()
 	fmt.Print(IconCollision)
 	fmt.Print(" ")
-	_, _ = ColorHighlight.Println("Error")
-	_, _ = ColorError.Println(err.Error())
+	_, _ = c.styles.Highlight().Println("Error")
+	_, _ = c.styles.Error().Println(err.Error())
 
 	if debug {
 		fmt.Println(errorz.SDump(err))

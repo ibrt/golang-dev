@@ -5,6 +5,7 @@ import (
 
 	"github.com/axw/gocov"
 	"github.com/fatih/color"
+	"github.com/ibrt/golang-utils/outz"
 )
 
 // Coverage describes collected coverage.
@@ -64,15 +65,15 @@ func (p *coveragePrinter) Print(coverage *Coverage) {
 		switch {
 		case pct >= p.higLmt:
 			pfx = "HIGC"
-			clr = ColorSuccess
+			clr = outz.DefaultStyles.Success()
 			higPkgs++
 		case pct >= p.medLmt:
 			pfx = "MEDC"
-			clr = ColorWarning
+			clr = outz.DefaultStyles.Warning()
 			medPkgs++
 		default:
 			pfx = "LOWC"
-			clr = ColorError
+			clr = outz.DefaultStyles.Error()
 			lowPkgs++
 		}
 
