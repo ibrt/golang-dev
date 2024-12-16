@@ -34,6 +34,8 @@ func (*Suite) TestMustLookupGoTool(g *WithT) {
 	g.Expect(gtz.MustLookupGoTool("go-cov-html")).To(Equal(gtz.GoToolGoCovHTML))
 	g.Expect(gtz.MustLookupGoTool("golint")).To(Equal(gtz.GoToolGolint))
 	g.Expect(gtz.MustLookupGoTool("mock-gen")).To(Equal(gtz.GoToolMockGen))
+	g.Expect(gtz.MustLookupGoTool("sqlc")).To(Equal(gtz.GoToolSQLC))
+	g.Expect(gtz.MustLookupGoTool("sqlc-gen-go")).To(Equal(gtz.GoToolSQLCGenGo))
 	g.Expect(gtz.MustLookupGoTool("static-check")).To(Equal(gtz.GoToolStaticCheck))
 	g.Expect(func() { gtz.MustLookupGoTool("unknown") }).To(PanicWith(MatchError("unknown go tool: unknown")))
 }

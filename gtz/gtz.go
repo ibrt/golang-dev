@@ -25,6 +25,8 @@ var (
 	GoToolGoCovHTML   = NewGoTool("github.com/matm/gocov-html", "cmd/gocov-html", "v1.4.0")
 	GoToolGolint      = NewGoTool("golang.org/x/lint", "golint", "v0.0.0-20210508222113-6edffad5e616")
 	GoToolMockGen     = NewGoTool("go.uber.org/mock", "/mockgen", "v0.5.0")
+	GoToolSQLC        = NewGoTool("github.com/sqlc-dev/sqlc", "cmd/sqlc", "v1.27.0")
+	GoToolSQLCGenGo   = NewGoTool("github.com/sqlc-dev/sqlc-gen-go", "", "v1.4.0")
 	GoToolStaticCheck = NewGoTool("honnef.co/go/tools", "cmd/staticcheck", "2024.1.1")
 )
 
@@ -39,6 +41,10 @@ func MustLookupGoTool(key string) *GoTool {
 		return GoToolGolint
 	case "mock-gen":
 		return GoToolMockGen
+	case "sqlc":
+		return GoToolSQLC
+	case "sqlc-gen-go":
+		return GoToolSQLCGenGo
 	case "static-check":
 		return GoToolStaticCheck
 	default:
