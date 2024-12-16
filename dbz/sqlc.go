@@ -7,6 +7,9 @@ import (
 	"github.com/ibrt/golang-utils/filez"
 	"github.com/ibrt/golang-utils/hashz"
 	"github.com/ibrt/golang-utils/jsonz"
+
+	"github.com/ibrt/golang-dev/dbz/internal/assets"
+	"github.com/ibrt/golang-dev/gtz"
 )
 
 // SQLCConfig describes the SQLC configuration.
@@ -106,8 +109,8 @@ type SQLCConfigSQLCodegenOptionsOverrideGoType struct {
 	Slice   bool   `json:"slice"`
 }
 
-// SQLCConfigBuilderParams describes parameters.
-type SQLCConfigBuilderParams struct {
+// SQLCGeneratorParams describes parameters.
+type SQLCGeneratorParams struct {
 	BuildDirPath   string `validate:"required"`
 	SchemaDirPath  string `validate:"required"`
 	QueriesDirPath string `validate:"required"`
@@ -117,25 +120,25 @@ type SQLCConfigBuilderParams struct {
 }
 
 // GetPluginFilePath returns the plugin file path.
-func (p *SQLCConfigBuilderParams) GetPluginFilePath() string {
+func (p *SQLCGeneratorParams) GetPluginFilePath() string {
 	return filepath.Join(p.BuildDirPath, "plugin.wasm.gz")
 }
 
 // GetConfigFilePath returns the config file path.
-func (p *SQLCConfigBuilderParams) GetConfigFilePath() string {
+func (p *SQLCGeneratorParams) GetConfigFilePath() string {
 	return filepath.Join(p.BuildDirPath, "plugin.wasm.gz")
 
 }
 
-// SQLCConfigBuilder implements an SQLC config builder.
-type SQLCConfigBuilder struct {
-	params *SQLCConfigBuilderParams
+// SQLCGenerator generates database bindings with SQLC.
+type SQLCGenerator struct {
+	params *SQLCGeneratorParams
 	config *SQLCConfig
 }
 
-// MustNewSQLCConfigBuilder initializes a new SQLCConfigBuilder.
-func MustNewSQLCConfigBuilder(params *SQLCConfigBuilderParams) *SQLCConfigBuilder {
-	return &SQLCConfigBuilder{
+// MustNewSQLCGenerator initializes a new SQLCGenerator.
+func MustNewSQLCGenerator(params *SQLCGeneratorParams) *SQLCGenerator {
+	return &SQLCGenerator{
 		params: params,
 		config: &SQLCConfig{
 			Version: "2",
@@ -247,19 +250,14 @@ func MustNewSQLCConfigBuilder(params *SQLCConfigBuilderParams) *SQLCConfigBuilde
 	}
 }
 
-// GetParams returns the params.
-func (c *SQLCConfigBuilder) GetParams() *SQLCConfigBuilderParams {
-	return c.params
-}
-
 // SetRename sets a rename rule.
-func (c *SQLCConfigBuilder) SetRename(k, v string) *SQLCConfigBuilder {
+func (c *SQLCGenerator) SetRename(k, v string) *SQLCGenerator {
 	c.config.SQL[0].Codegen[0].Options.Rename[k] = v
 	return c
 }
 
 // MergeRenames merges the given rename rules.
-func (c *SQLCConfigBuilder) MergeRenames(m map[string]string) *SQLCConfigBuilder {
+func (c *SQLCGenerator) MergeRenames(m map[string]string) *SQLCGenerator {
 	for k, v := range m {
 		c.SetRename(k, v)
 	}
@@ -267,12 +265,23 @@ func (c *SQLCConfigBuilder) MergeRenames(m map[string]string) *SQLCConfigBuilder
 }
 
 // AddOverride adds an override to the config.
-func (c *SQLCConfigBuilder) AddOverride(overrides ...*SQLCConfigSQLCodegenOptionsOverride) *SQLCConfigBuilder {
+func (c *SQLCGenerator) AddOverride(overrides ...*SQLCConfigSQLCodegenOptionsOverride) *SQLCGenerator {
 	c.config.SQL[0].Codegen[0].Options.Overrides = append(c.config.SQL[0].Codegen[0].Options.Overrides, overrides...)
 	return c
 }
 
 // MustOutput the config to disk.
-func (c *SQLCConfigBuilder) MustOutput() {
+func (c *SQLCGenerator) MustOutput() {
 	filez.MustWriteFile(c.params.GetConfigFilePath(), 0777, 0666, jsonz.MustMarshalPretty(c.config))
+}
+
+// MustGenerate generates the SQLC bindings.
+func (c *SQLCGenerator) MustGenerate() {
+	filez.MustPrepareDir(c.params.BuildDirPath, 0777)
+
+	filez.MustWriteFile(c.params.GetPluginFilePath(), 0777, 0666, assets.SQLCPluginWASMGZEmbed)
+	filez.MustWriteFile(c.params.GetConfigFilePath(), 0777, 0666, jsonz.MustMarshalPretty(c.config))
+
+	gtz.GoToolSQLC.MustRun("vet", "-f", c.params.GetConfigFilePath())
+	gtz.GoToolSQLC.MustRun("generate", "-f", c.params.GetConfigFilePath())
 }

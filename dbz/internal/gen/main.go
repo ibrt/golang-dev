@@ -45,5 +45,4 @@ func main() {
 	buf := gzipz.MustCompress(filez.MustReadFile(filepath.Join(dirPath, "sqlc-gen-go", "plugin", "plugin.wasm")))
 	filez.MustWriteFile(pluginFilePath, 0777, 0666, buf)
 	consolez.DefaultCLI.Notice("dbz-gen", "generated", pluginFilePath)
-
 }
