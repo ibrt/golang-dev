@@ -79,4 +79,10 @@
 
     {{- end}}
     }
+
+    func NewGenDB(ctx context.Context) GenDB {
+        return &genDBImpl{
+            ctx: ctx,
+        }
+    }
 {{end}}

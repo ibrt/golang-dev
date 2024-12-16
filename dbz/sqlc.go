@@ -5,6 +5,7 @@ import (
 	"path/filepath"
 
 	"github.com/ibrt/golang-utils/filez"
+	"github.com/ibrt/golang-utils/gzipz"
 	"github.com/ibrt/golang-utils/hashz"
 	"github.com/ibrt/golang-utils/jsonz"
 
@@ -121,12 +122,12 @@ type SQLCGeneratorParams struct {
 
 // GetPluginFilePath returns the plugin file path.
 func (p *SQLCGeneratorParams) GetPluginFilePath() string {
-	return filepath.Join(p.BuildDirPath, "plugin.wasm.gz")
+	return filepath.Join(p.BuildDirPath, "plugin.wasm")
 }
 
 // GetConfigFilePath returns the config file path.
 func (p *SQLCGeneratorParams) GetConfigFilePath() string {
-	return filepath.Join(p.BuildDirPath, "plugin.wasm.gz")
+	return filepath.Join(p.BuildDirPath, "config.json")
 
 }
 
@@ -147,7 +148,7 @@ func MustNewSQLCGenerator(params *SQLCGeneratorParams) *SQLCGenerator {
 					Name: "plugin",
 					WASM: &SQLCConfigPluginWASM{
 						URL:    fmt.Sprintf("file://%v", params.GetPluginFilePath()),
-						SHA256: hashz.MustHashSHA256(filez.MustReadFile(params.GetPluginFilePath())),
+						SHA256: hashz.MustHashSHA256(gzipz.MustDecompress(assets.SQLCPluginWASMGZEmbed)),
 					},
 				},
 			},
@@ -279,7 +280,7 @@ func (c *SQLCGenerator) MustOutput() {
 func (c *SQLCGenerator) MustGenerate() {
 	filez.MustPrepareDir(c.params.BuildDirPath, 0777)
 
-	filez.MustWriteFile(c.params.GetPluginFilePath(), 0777, 0666, assets.SQLCPluginWASMGZEmbed)
+	filez.MustWriteFile(c.params.GetPluginFilePath(), 0777, 0666, gzipz.MustDecompress(assets.SQLCPluginWASMGZEmbed))
 	filez.MustWriteFile(c.params.GetConfigFilePath(), 0777, 0666, jsonz.MustMarshalPretty(c.config))
 
 	gtz.GoToolSQLC.MustRun("vet", "-f", c.params.GetConfigFilePath())

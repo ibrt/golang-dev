@@ -84,9 +84,9 @@ func (d *genDBImpl) {{.MethodName}}(ctx context.Context, db DBTX, {{.Arg.Pair}})
 {{- else -}}
 func (d *genDBImpl) {{.MethodName}}({{.Arg.Pair}}) ({{.Ret.DefineType}}, error) {
 	return logm.Wrap1(d.ctx, fmt.Sprintf("dbm.%v", "{{.MethodName}}"), func (ctx context.Context) ({{.Ret.DefineType}}, error) {
-        {{range .Arg.Pairs}}vldz.MustValidate({{.Name}}, false)
+        {{range .Arg.Pairs}}vldz.MustValidateStruct({{.Name}})
         {{end}}
-        row := pgm.Get(ctx).QueryRow(fmt.Sprintf("db.%v", "{{.MethodName}}"), {{.ConstantName}}, {{.Arg.Params}})
+        row := pgm.MustGet(ctx).QueryRow(fmt.Sprintf("db.%v", "{{.MethodName}}"), {{.ConstantName}}, {{.Arg.Params}})
 {{- end}}
         {{- if or (ne .Arg.Pair .Ret.Pair) (ne .Arg.DefineType .Ret.DefineType) }}
         var {{.Ret.Name}} {{.Ret.Type}}
@@ -114,9 +114,9 @@ func (d *genDBImpl) {{.MethodName}}(ctx context.Context, db DBTX, {{.Arg.Pair}})
 {{- else -}}
 func (d *genDBImpl) {{.MethodName}}({{.Arg.Pair}}) ([]{{.Ret.DefineType}}, error) {
     return logm.Wrap1(d.ctx, fmt.Sprintf("dbm.%v", "{{.MethodName}}"), func (ctx context.Context) ([]{{.Ret.DefineType}}, error) {
-        {{range .Arg.Pairs}}vldz.MustValidate({{.Name}}, false)
+        {{range .Arg.Pairs}}vldz.MustValidateStruct({{.Name}})
         {{end}}
-    	rows, err := pgm.Get(d.ctx).Query(fmt.Sprintf("db.%v", "{{.MethodName}}"), {{.ConstantName}}, {{.Arg.Params}})
+    	rows, err := pgm.MustGet(d.ctx).Query(fmt.Sprintf("db.%v", "{{.MethodName}}"), {{.ConstantName}}, {{.Arg.Params}})
 {{- end}}
         if err != nil {
             return nil, errorz.Wrap(err)
@@ -146,9 +146,9 @@ func (d *genDBImpl) {{.MethodName}}({{.Arg.Pair}}) ([]{{.Ret.DefineType}}, error
 {{end -}}
 func (d *genDBImpl) {{.MethodName}}Scanner({{.Arg.Pair}}) ({{.Ret.DefineType}}Scanner, error) {
     return logm.Wrap1(d.ctx, fmt.Sprintf("dbm.%v", "{{.MethodName}}Scanner"), func (ctx context.Context) ({{.Ret.DefineType}}Scanner, error) {
-        {{range .Arg.Pairs}}vldz.MustValidate({{.Name}}, false)
+        {{range .Arg.Pairs}}vldz.MustValidateStruct({{.Name}})
         {{end}}
-    	rows, err := pgm.Get(d.ctx).Query(fmt.Sprintf("db.%v", "{{.MethodName}}Scanner"), {{.ConstantName}}, {{.Arg.Params}})
+    	rows, err := pgm.MustGet(d.ctx).Query(fmt.Sprintf("db.%v", "{{.MethodName}}Scanner"), {{.ConstantName}}, {{.Arg.Params}})
         if err != nil {
             return nil, errorz.Wrap(err)
         }
@@ -170,9 +170,9 @@ func (d *genDBImpl) {{.MethodName}}(ctx context.Context, db DBTX, {{.Arg.Pair}})
 {{- else -}}
 func (d *genDBImpl) {{.MethodName}}({{.Arg.Pair}}) error {
     return logm.Wrap0(d.ctx, fmt.Sprintf("dbm.%v", "{{.MethodName}}"), func(ctx context.Context) error {
-        {{range .Arg.Pairs}}vldz.MustValidate({{.Name}}, false)
+        {{range .Arg.Pairs}}vldz.MustValidateStruct({{.Name}})
         {{end}}
-	    _, err := pgm.Get(ctx).Exec(fmt.Sprintf("db.%v", "{{.MethodName}}"), {{.ConstantName}}, {{.Arg.Params}})
+	    _, err := pgm.MustGet(ctx).Exec(fmt.Sprintf("db.%v", "{{.MethodName}}"), {{.ConstantName}}, {{.Arg.Params}})
 {{- end}}
 	    return errorz.MaybeWrap(err)
     }{{range .Arg.Pairs}}, logm.BeginErrM({{if eq .Name "arg"}}logm.StandardKeyParams{{else}}"{{.Name}}"{{end}}, {{.Name}}){{ end }})
@@ -188,9 +188,9 @@ func (d *genDBImpl) {{.MethodName}}(ctx context.Context, db DBTX, {{.Arg.Pair}})
 {{- else -}}
 func (d *genDBImpl) {{.MethodName}}({{.Arg.Pair}}) (int64, error) {
 	return logm.Wrap1(d.ctx, fmt.Sprintf("dbm.%v", "{{.MethodName}}"), func (ctx context.Context) (int64, error) {
-        {{range .Arg.Pairs}}vldz.MustValidate({{.Name}}, false)
+        {{range .Arg.Pairs}}vldz.MustValidateStruct({{.Name}})
         {{end}}
-    	result, err := pgm.Get(d.ctx).Exec(fmt.Sprintf("db.%v", "{{.MethodName}}"), {{.ConstantName}}, {{.Arg.Params}})
+    	result, err := pgm.MustGet(d.ctx).Exec(fmt.Sprintf("db.%v", "{{.MethodName}}"), {{.ConstantName}}, {{.Arg.Params}})
 {{- end}}
         if err != nil {
             return 0, errorz.Wrap(err)
@@ -209,9 +209,9 @@ func (d *genDBImpl) {{.MethodName}}(ctx context.Context, db DBTX, {{.Arg.Pair}})
 {{- else -}}
 func (d *genDBImpl) {{.MethodName}}({{.Arg.Pair}}) (pgconn.CommandTag, error) {
 	return logm.Wrap1(d.ctx, fmt.Sprintf("dbm.%v", "{{.MethodName}}"), func (ctx context.Context) (pgconn.CommandTag, error) {
-        {{range .Arg.Pairs}}vldz.MustValidate({{.Name}}, false)
+        {{range .Arg.Pairs}}vldz.MustValidateStruct({{.Name}})
         {{end}}
-    	tag, err := pgm.Get(d.ctx).Exec(fmt.Sprintf("db.%v", "{{.MethodName}}"), {{.ConstantName}}, {{.Arg.Params}})
+    	tag, err := pgm.MustGet(d.ctx).Exec(fmt.Sprintf("db.%v", "{{.MethodName}}"), {{.ConstantName}}, {{.Arg.Params}})
 {{- end}}
         return tag, errorz.MaybeWrap(err)
     }{{range .Arg.Pairs}}, logm.BeginErrM({{if eq .Name "arg"}}logm.StandardKeyParams{{else}}"{{.Name}}"{{end}}, {{.Name}}){{ end }})
