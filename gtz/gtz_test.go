@@ -392,3 +392,8 @@ func (*Suite) TestRunGoTests_AllPackages(g *WithT, ctrl *gomock.Controller) {
 	}, "\n")))
 	g.Expect(errBuf).To(BeEmpty())
 }
+
+func (*Suite) TestGenerateVersions(g *WithT) {
+	g.Expect(gtz.MustGenerateShortVersion()).To(MatchRegexp(`^[a-f0-9]{7}$`))
+	g.Expect(gtz.MustGenerateLongVersion()).To(MatchRegexp(`^\d{8}T\d{6}-[a-f0-9]{7}$`))
+}
