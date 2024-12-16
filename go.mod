@@ -7,7 +7,7 @@ require (
 	github.com/axw/gocov v1.2.1
 	github.com/compose-spec/compose-go v1.20.2
 	github.com/fatih/color v1.18.0
-	github.com/ibrt/golang-utils v0.10.0
+	github.com/ibrt/golang-utils v0.11.0
 	github.com/jackc/pgx/v5 v5.7.1
 	github.com/jackc/tern/v2 v2.3.0
 	github.com/onsi/gomega v1.36.1
@@ -19,7 +19,7 @@ require (
 require (
 	dario.cat/mergo v1.0.1 // indirect
 	github.com/Masterminds/goutils v1.1.1 // indirect
-	github.com/Masterminds/semver/v3 v3.3.0 // indirect
+	github.com/Masterminds/semver/v3 v3.3.1 // indirect
 	github.com/Masterminds/sprig/v3 v3.3.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/distribution/reference v0.6.0 // indirect
@@ -38,6 +38,7 @@ require (
 	github.com/mitchellh/reflectwalk v1.0.2 // indirect
 	github.com/opencontainers/go-digest v1.0.0 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
+	github.com/rogpeppe/go-internal v1.13.1 // indirect
 	github.com/shopspring/decimal v1.4.0 // indirect
 	github.com/sirupsen/logrus v1.9.3 // indirect
 	github.com/spf13/cast v1.7.0 // indirect

@@ -1,0 +1,12 @@
+{{define "dbCodeTemplatePgx"}}
+
+var (
+	_ pgx.Row
+	_ pgconn.CommandTag
+)
+
+type genDBImpl struct {
+	ctx context.Context
+}
+
+{{end}}
