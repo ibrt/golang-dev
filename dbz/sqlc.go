@@ -1,7 +1,16 @@
 package dbz
 
-// SQLConfig describes the SQLC configuration.
-type SQLConfig struct {
+import (
+	"fmt"
+	"path/filepath"
+
+	"github.com/ibrt/golang-utils/filez"
+	"github.com/ibrt/golang-utils/hashz"
+	"github.com/ibrt/golang-utils/jsonz"
+)
+
+// SQLCConfig describes the SQLC configuration.
+type SQLCConfig struct {
 	Version string              `json:"version,omitempty"`
 	Plugins []*SQLCConfigPlugin `json:"plugins,omitempty"`
 	SQL     []*SQLCConfigSQL    `json:"sql,omitempty"`
@@ -95,4 +104,175 @@ type SQLCConfigSQLCodegenOptionsOverrideGoType struct {
 	Type    string `json:"type,omitempty"`
 	Pointer bool   `json:"pointer"`
 	Slice   bool   `json:"slice"`
+}
+
+// SQLCConfigBuilderParams describes parameters.
+type SQLCConfigBuilderParams struct {
+	BuildDirPath   string `validate:"required"`
+	SchemaDirPath  string `validate:"required"`
+	QueriesDirPath string `validate:"required"`
+	PostgresURL    string `validate:"required"`
+	OutDirPath     string `validate:"required"`
+	OutPackageName string `validate:"required"`
+}
+
+// GetPluginFilePath returns the plugin file path.
+func (p *SQLCConfigBuilderParams) GetPluginFilePath() string {
+	return filepath.Join(p.BuildDirPath, "plugin.wasm.gz")
+}
+
+// GetConfigFilePath returns the config file path.
+func (p *SQLCConfigBuilderParams) GetConfigFilePath() string {
+	return filepath.Join(p.BuildDirPath, "plugin.wasm.gz")
+
+}
+
+// SQLCConfigBuilder implements an SQLC config builder.
+type SQLCConfigBuilder struct {
+	params *SQLCConfigBuilderParams
+	config *SQLCConfig
+}
+
+// MustNewSQLCConfigBuilder initializes a new SQLCConfigBuilder.
+func MustNewSQLCConfigBuilder(params *SQLCConfigBuilderParams) *SQLCConfigBuilder {
+	return &SQLCConfigBuilder{
+		params: params,
+		config: &SQLCConfig{
+			Version: "2",
+			Plugins: []*SQLCConfigPlugin{
+				{
+					Name: "plugin",
+					WASM: &SQLCConfigPluginWASM{
+						URL:    fmt.Sprintf("file://%v", params.GetPluginFilePath()),
+						SHA256: hashz.MustHashSHA256(filez.MustReadFile(params.GetPluginFilePath())),
+					},
+				},
+			},
+			SQL: []*SQLCConfigSQL{
+				{
+					Engine:  "postgresql",
+					Schema:  params.SchemaDirPath,
+					Queries: params.QueriesDirPath,
+					Database: &SQLCConfigSQLDatabase{
+						Managed: false,
+						URI:     params.PostgresURL,
+					},
+					Codegen: []*SQLCConfigSQLCodegen{
+						{
+							Plugin: "plugin",
+							Out:    params.OutDirPath,
+							Options: &SQLCConfigSQLCodegenOptions{
+								BuildTags:                "",
+								EmitAllEnumValues:        true,
+								EmitEnumValidMethod:      true,
+								EmitExactTableNames:      true,
+								EmitInterface:            true,
+								EmitJSONTags:             true,
+								EmitParamsStructPointers: true,
+								EmitPointersForNullTypes: true,
+								EmitResultStructPointers: true,
+								EmitSQLAsComment:         true,
+								JSONTagsCaseStyle:        "camel",
+								OmitSQLCVersion:          true,
+								OutputBatchFileName:      "batch.gen.go",
+								OutputCopyFromFileName:   "copyfrom.gen.go",
+								OutputDBFileName:         "impl.gen.go",
+								OutputFilesSuffix:        ".gen",
+								OutputModelsFileName:     "models.gen.go",
+								OutputQuerierFileName:    "iface.gen.go",
+								Package:                  params.OutPackageName,
+								QueryParameterLimit:      0,
+								Rename:                   make(map[string]string, 0),
+								SQLPackage:               "pgx/v5",
+								Overrides: []*SQLCConfigSQLCodegenOptionsOverride{
+									{
+										DBType:   "uuid",
+										Nullable: false,
+										GoType: &SQLCConfigSQLCodegenOptionsOverrideGoType{
+											Type: "string",
+										},
+									},
+									{
+										DBType:   "uuid",
+										Nullable: true,
+										GoType: &SQLCConfigSQLCodegenOptionsOverrideGoType{
+											Type:    "string",
+											Pointer: true,
+										},
+									},
+									{
+										DBType:   "pg_catalog.timestamptz",
+										Nullable: false,
+										GoType: &SQLCConfigSQLCodegenOptionsOverrideGoType{
+											Import: "time",
+											Type:   "Time",
+										},
+									},
+									{
+										DBType:   "pg_catalog.timestamptz",
+										Nullable: true,
+										GoType: &SQLCConfigSQLCodegenOptionsOverrideGoType{
+											Import:  "time",
+											Type:    "Time",
+											Pointer: true,
+										},
+									},
+									{
+										DBType:   "timestamptz",
+										Nullable: false,
+										GoType: &SQLCConfigSQLCodegenOptionsOverrideGoType{
+											Import: "time",
+											Type:   "Time",
+										},
+									},
+									{
+										DBType:   "timestamptz",
+										Nullable: true,
+										GoType: &SQLCConfigSQLCodegenOptionsOverrideGoType{
+											Import:  "time",
+											Type:    "Time",
+											Pointer: true,
+										},
+									},
+								},
+							},
+						},
+					},
+					Rules: []string{
+						"sqlc/db-prepare",
+					},
+				},
+			},
+		},
+	}
+}
+
+// GetParams returns the params.
+func (c *SQLCConfigBuilder) GetParams() *SQLCConfigBuilderParams {
+	return c.params
+}
+
+// SetRename sets a rename rule.
+func (c *SQLCConfigBuilder) SetRename(k, v string) *SQLCConfigBuilder {
+	c.config.SQL[0].Codegen[0].Options.Rename[k] = v
+	return c
+}
+
+// MergeRenames merges the given rename rules.
+func (c *SQLCConfigBuilder) MergeRenames(m map[string]string) *SQLCConfigBuilder {
+	for k, v := range m {
+		c.SetRename(k, v)
+	}
+	return c
+}
+
+// AddOverride adds an override to the config.
+func (c *SQLCConfigBuilder) AddOverride(overrides ...*SQLCConfigSQLCodegenOptionsOverride) *SQLCConfigBuilder {
+	c.config.SQL[0].Codegen[0].Options.Overrides = append(c.config.SQL[0].Codegen[0].Options.Overrides, overrides...)
+	return c
+}
+
+// MustOutput the config to disk.
+func (c *SQLCConfigBuilder) MustOutput() {
+	filez.MustWriteFile(c.params.GetConfigFilePath(), 0777, 0666, jsonz.MustMarshalPretty(c.config))
 }
