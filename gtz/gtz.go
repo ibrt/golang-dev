@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/ibrt/golang-utils/errorz"
 	"github.com/ibrt/golang-utils/filez"
@@ -276,4 +277,17 @@ func openGoCoverage(params *GoTestsParams, coverageJSON []byte) {
 	shellz.NewCommand("open").
 		AddParams(filepath.Join(params.CoverageDirPath, "coverage.html")).
 		MustRun()
+}
+
+// MustGenerateShortVersion generates a version using the current git commit hash.
+func MustGenerateShortVersion() string {
+	return strings.TrimSpace(shellz.
+		NewCommand("git", "rev-parse", "--short", "HEAD").
+		SetEcho(false).
+		MustOutputString(false))
+}
+
+// MustGenerateLongVersion generates a version using the current time and git commit hash.
+func MustGenerateLongVersion() string {
+	return fmt.Sprintf("%v-%v", time.Now().UTC().Format("20060102T150405"), MustGenerateShortVersion())
 }
