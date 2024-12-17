@@ -43,8 +43,6 @@ github.com/hexops/gotextdiff v1.0.3 h1:gitA9+qJrrTCsiCl7+kh75nPqQt1cx4ZkudSTLoUq
 github.com/hexops/gotextdiff v1.0.3/go.mod h1:pSWU5MAI3yDq+fZBTazCSJysOMbxWL1BSow5/V2vxeg=
 github.com/huandu/xstrings v1.5.0 h1:2ag3IFq9ZDANvthTwTiqSSZLjDc+BedvHPAp5tJy2TI=
 github.com/huandu/xstrings v1.5.0/go.mod h1:y5/lhBue+AyNmUVz9RLU9xbLR0o4KIIExikq4ovT0aE=
-github.com/ibrt/golang-utils v0.11.0 h1:ZeYUvDZLDyIzfGdaXrtU4i3HholSyazEud6RUQSh83I=
-github.com/ibrt/golang-utils v0.11.0/go.mod h1:KQF3oD7IWvTri0Plm/tAVwppoh16f4r8zGO+FCMzyiA=
 github.com/ibrt/golang-utils v0.12.0 h1:vQ0YczIpT4RLQAQ5z+oz62J3tEajoniyCOjIJJvlJl4=
 github.com/ibrt/golang-utils v0.12.0/go.mod h1:KQF3oD7IWvTri0Plm/tAVwppoh16f4r8zGO+FCMzyiA=
 github.com/jackc/pgpassfile v1.0.0 h1:/6Hmqy13Ss2zCq62VdNG8tM1wchn8zjSGOBJ6icpsIM=
